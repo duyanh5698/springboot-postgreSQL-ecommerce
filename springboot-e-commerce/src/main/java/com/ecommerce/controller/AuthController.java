@@ -1,10 +1,7 @@
 package com.ecommerce.controller;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -88,7 +85,7 @@ public class AuthController {
 		Set<Role> roles = new HashSet<>();
 		
 		Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-				.orElseThrow(() -> new RuntimeException("Error: There is no Role_USER in the database."));
+				.orElseThrow(() -> new RuntimeException("Error: There is no 'ROLE_USER' in the database."));
 		roles.add(userRole);
 		
 		user.setRoles(roles);
