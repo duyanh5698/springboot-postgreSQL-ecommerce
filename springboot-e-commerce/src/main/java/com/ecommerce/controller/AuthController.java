@@ -85,7 +85,7 @@ public class AuthController {
 		Set<Role> roles = new HashSet<>();
 		
 		Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-				.orElseThrow(() -> new RuntimeException("Error: There is no 'ROLE_USER' in the database."));
+				.orElseThrow(() -> new RuntimeException("Error: There is no 'ROLE_ADMIN' in the database."));
 		roles.add(userRole);
 		
 		user.setRoles(roles);
