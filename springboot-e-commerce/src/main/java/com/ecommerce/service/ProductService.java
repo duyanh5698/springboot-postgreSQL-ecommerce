@@ -36,20 +36,20 @@ public class ProductService {
 	
 	public Product edit(long id, Product editProduct) {
 		Optional<Product> productData = productRepository.findById(id);
-		Product product = productData.get();
-		//4
-		
-//		product.set(editProduct);
-		product.setName(editProduct.getName());
-		product.setDecription(editProduct.getDecription());
-		product.setQuantity(editProduct.getQuantity());
-		product.setPrice(editProduct.getPrice());
-		return productRepository.save(product);
+		if(productData.isPresent()) {
+			Product product = productData.get();
+			product.set(editProduct);		
+			return productRepository.save(product);
+		}
+		return null;
 	}
 	
 	public Boolean deleteById(Long id) {
-		//exist
-        productRepository.deleteById(id);
-        return true;
+		Optional<Product> product = productRepository.findById(id);
+		if(product.isPresent()) {
+	        productRepository.deleteById(id);
+	        return true;
+		}
+		return false;
 	}
 }

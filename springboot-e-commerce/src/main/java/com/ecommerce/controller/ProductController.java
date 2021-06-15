@@ -1,7 +1,6 @@
 package com.ecommerce.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ecommerce.model.Product;
+import com.ecommerce.service.FileService;
 import com.ecommerce.service.ProductService;
 
 @RestController
@@ -27,11 +27,12 @@ public class ProductController {
 	
 	@Autowired
 	ProductService productService;
+	
+	@Autowired
+    FileService fileService;
 
 	@GetMapping("/products")
 	public ResponseEntity<List<Product>> getAllProducts(){
-		
-		//2
 		List<Product> products = productService.getAllProducts();
 		productService.getAllProducts().forEach(products::add);
 		if (products.isEmpty()) {
@@ -41,9 +42,17 @@ public class ProductController {
 	}
 	
 	@PostMapping("/products")
-	public ResponseEntity<Product> createProduct(@RequestBody Product product) throws IOException{
-			//valid
-		return new ResponseEntity<>(productService.save(product), HttpStatus.CREATED);
+	public ResponseEntity<String> createProduct(@RequestParam("name") String name,@RequestParam("decription") String decription,@RequestParam("quantity") int quantity,@RequestParam("price") int price,@RequestParam("userId") Long userId, @RequestParam("file") MultipartFile file) throws IOException{
+		try {
+			Product product = new Product(name,decription,quantity,price,userId);
+			productService.save(product);
+			fileService.save(file, product.getId());
+			return ResponseEntity.status(HttpStatus.OK)
+                    .body(String.format("Product created successfully!"));
+		} catch(Exception e){
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(String.format("Fail to create product!"));
+		}
 	}
 	
 	@PutMapping("/products/{id}")
@@ -59,6 +68,5 @@ public class ProductController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	
 	}
 }
