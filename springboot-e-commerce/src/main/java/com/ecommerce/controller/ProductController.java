@@ -2,6 +2,7 @@ package com.ecommerce.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ecommerce.model.Product;
+import com.ecommerce.model.dto.MessageResponse;
 import com.ecommerce.service.FileService;
 import com.ecommerce.service.ProductService;
 
@@ -39,6 +41,15 @@ public class ProductController {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/{id}")
+	public ResponseEntity<Optional<Product>> getProductById(Long id){
+		Optional<Product> product = productService.getProductById(id);
+		if (product.isPresent()) {
+			return ResponseEntity.ok(product);
+		}
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PostMapping("/products")
