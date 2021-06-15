@@ -1,12 +1,19 @@
 package com.ecommerce.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
@@ -46,7 +53,16 @@ public class Product {
 	
 	@Column(name = "user_id")
 	private Long userId;
+	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = { CascadeType.ALL }, orphanRemoval = true)
+//	@Where(clause = "active = 'TRUE'")
+	private List<File> files = new ArrayList<>();
 
+	public List<String> getImageId(){
+		List<String> ids = files.stream().map(i -> i.downloadURL()).collect(Collectors.toList());
+		return ids;
+	}
 
 	public String getCreateBy() {
 		return this.user != null ? this.user.getEmail() : "";

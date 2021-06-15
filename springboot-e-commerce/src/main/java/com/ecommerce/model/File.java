@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -43,4 +44,8 @@ public class File{
     @Column(name = "product_id")
 	private Long productId;
     
+    public String downloadURL() {
+    	String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/").path(this.id).toUriString();
+    	return url;
+    }
 }
