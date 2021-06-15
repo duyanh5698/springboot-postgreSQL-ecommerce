@@ -53,17 +53,8 @@ public class ProductController {
 	}
 	
 	@PostMapping("/products")
-	public ResponseEntity<String> createProduct(@RequestParam("name") String name,@RequestParam("decription") String decription,@RequestParam("quantity") int quantity,@RequestParam("price") int price,@RequestParam("userId") Long userId, @RequestParam("file") MultipartFile file) throws IOException{
-		try {
-			Product product = new Product(name,decription,quantity,price,userId);
-			productService.save(product);
-			fileService.save(file, product.getId());
-			return ResponseEntity.status(HttpStatus.OK)
-                    .body(String.format("Product created successfully!"));
-		} catch(Exception e){
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(String.format("Fail to create product!"));
-		}
+	public ResponseEntity<Product> createProduct(@RequestBody Product product) throws IOException{
+		return new ResponseEntity<>(productService.save(product), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/products/{id}")
