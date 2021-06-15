@@ -59,7 +59,7 @@ public class Product {
 //	@Where(clause = "active = 'TRUE'")
 	private List<File> files = new ArrayList<>();
 
-	public List<String> getImageId(){
+	public List<String> getImageUrl(){
 		List<String> ids = files.stream().map(i -> i.downloadURL()).collect(Collectors.toList());
 		return ids;
 	}
