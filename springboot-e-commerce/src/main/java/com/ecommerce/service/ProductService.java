@@ -25,6 +25,10 @@ public class ProductService {
 		return this.productRepository.findAll();
 	}
 	
+	public Optional<Product> getProductById(Long id) {
+		return this.productRepository.findById(id);
+	}
+	
 	public Product save(Product product) {
 		Optional<User> user = userRepository.findById(product.getUserId());
 		if(user.isPresent()) {
