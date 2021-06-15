@@ -52,7 +52,7 @@ public class Product {
 		return this.user != null ? this.user.getEmail() : "";
 	}
 
-	public Product(@NotBlank String name, @NotBlank String description, @NotBlank int quantity, @NotBlank int price, Long userId) {
+	public Product(@NotBlank String name, @NotBlank String decription, @NotBlank int quantity, @NotBlank int price, Long userId) {
 		super();
 		this.name = name;
 		this.description = description;
