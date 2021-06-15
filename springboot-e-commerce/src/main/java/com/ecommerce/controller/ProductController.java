@@ -1,8 +1,8 @@
 package com.ecommerce.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ecommerce.model.Product;
+import com.ecommerce.model.dto.MessageResponse;
+import com.ecommerce.service.FileService;
 import com.ecommerce.service.ProductService;
 
 @RestController
@@ -27,11 +29,12 @@ public class ProductController {
 	
 	@Autowired
 	ProductService productService;
+	
+	@Autowired
+    FileService fileService;
 
 	@GetMapping("/products")
 	public ResponseEntity<List<Product>> getAllProducts(){
-		
-		//2
 		List<Product> products = productService.getAllProducts();
 		productService.getAllProducts().forEach(products::add);
 		if (products.isEmpty()) {
@@ -40,9 +43,17 @@ public class ProductController {
 		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
 	}
 	
+	@GetMapping("/products/{id}")
+	public ResponseEntity<Optional<Product>> getProductById(@PathVariable("id") long id){
+		Optional<Product> product = productService.getProductById(id);
+		if (product.isPresent()) {
+			return ResponseEntity.ok(product);
+		}
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+	
 	@PostMapping("/products")
 	public ResponseEntity<Product> createProduct(@RequestBody Product product) throws IOException{
-			//valid
 		return new ResponseEntity<>(productService.save(product), HttpStatus.CREATED);
 	}
 	
@@ -59,6 +70,5 @@ public class ProductController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	
 	}
 }
