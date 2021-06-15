@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ecommerce.model.File;
 import com.ecommerce.model.Product;
-import com.ecommerce.model.User;
 import com.ecommerce.repository.FileRepository;
 import com.ecommerce.repository.ProductRepository;
 
@@ -33,7 +31,6 @@ public class FileService {
     }
 
     public void save(MultipartFile file, Long id) throws IOException {
-    	
     	try {
     		Optional<Product> product = productRepository.findById(id);
         	if(product.isPresent()) {

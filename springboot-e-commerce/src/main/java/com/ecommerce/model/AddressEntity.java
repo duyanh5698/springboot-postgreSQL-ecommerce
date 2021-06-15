@@ -17,27 +17,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "products")
+@Table(name = "addresses")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public class AddressEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@NotBlank
-	private String name;
+	private String address;
 	
 	@NotBlank
-	private String description;
+	private String city;
 	
 	@NotBlank
-	private int quantity;
+	private String state;
 	
 	@NotBlank
-	private int price;
+	private String country;
+	
+	@NotBlank
+	private String zipcode;
+	
+	@NotBlank
+	private String phoneNumber;
 	
 	@JsonIgnore
 	@ManyToOne
@@ -46,27 +52,13 @@ public class Product {
 	
 	@Column(name = "user_id")
 	private Long userId;
-
-
-	public String getCreateBy() {
-		return this.user != null ? this.user.getEmail() : "";
-	}
-
-	public Product(@NotBlank String name, @NotBlank String description, @NotBlank int quantity, @NotBlank int price, Long userId) {
-		super();
-		this.name = name;
-		this.description = description;
-		this.quantity = quantity;
-		this.price = price;
-		this.userId = userId;
-	}
 	
-	public void set(Product editProduct) {
-			this.name = editProduct.getName();
-			this.description = editProduct.getDescription();
-			this.quantity = editProduct.getQuantity();
-			this.price = editProduct.getPrice();
-			this.userId = editProduct.getUserId();
+	public void set(AddressEntity editAddress) {
+		this.address = editAddress.getAddress();
+		this.city = editAddress.getCity();
+		this.state = editAddress.getState();
+		this.country = editAddress.getCountry();
+		this.zipcode = editAddress.getZipcode();
+		this.userId = editAddress.getUserId();
 	}
-	
 }

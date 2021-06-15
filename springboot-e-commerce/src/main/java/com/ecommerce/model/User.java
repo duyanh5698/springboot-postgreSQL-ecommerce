@@ -44,9 +44,6 @@ public class User {
 	private String email;
 	
 	@NotBlank
-	private String fullName;
-	
-	@NotBlank
 	private int age;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
