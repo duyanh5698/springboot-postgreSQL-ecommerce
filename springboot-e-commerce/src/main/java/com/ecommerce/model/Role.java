@@ -15,21 +15,21 @@ import lombok.NoArgsConstructor;
 @Table(name = "roles")
 @NoArgsConstructor
 public class Role {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private ERole name;
-	
+
 	public Role(ERole name) {
 		super();
 		this.name = name;
 	}
-	
+
 	public String getNameRole() {
-		return this.name != null ? this.name.name: "";
+		return this.name != null ? this.name.roleName : "";
 	}
 }

@@ -1,14 +1,12 @@
 package com.ecommerce.model;
 
 public enum ERole {
-	ROLE_USER("Customer"),
-	ROLE_ADMIN("Admin");
-	
+	ROLE_USER("Customer"), ROLE_ADMIN("Admin");
+
 	ERole(String name) {
-		this.name = name;
+		this.roleName = name;
 	}
 
-	public String name;
-	
-	
+	public String roleName;
+
 }
