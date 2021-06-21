@@ -18,29 +18,27 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
+	private User userInfo;	
+
 	private Long id;
-	
+
 	private String username;
-	
+
 	private String email;
-	
+
 	@JsonIgnore
-	private String password;	
-	
+	private String password;
+
 	private Collection<? extends GrantedAuthority> authorities;
-	
-	public static UserDetailsImpl build(User user){
+
+	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(Role -> new SimpleGrantedAuthority(Role.getNameRole()))
-				.collect(Collectors.toList());
-		
-		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
+				.map(Role -> new SimpleGrantedAuthority(Role.getNameRole())).collect(Collectors.toList());
+
+		return new UserDetailsImpl(user, user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
 	}
 
 	@Override
@@ -67,7 +65,7 @@ public class UserDetailsImpl implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -80,12 +78,12 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return null;
+		return userInfo.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return null;
+		return userInfo.getUsername();
 	}
 
 }

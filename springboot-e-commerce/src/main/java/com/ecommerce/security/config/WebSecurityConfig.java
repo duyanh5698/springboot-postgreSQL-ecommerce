@@ -27,6 +27,7 @@ import com.ecommerce.service.UserDetailsServiceImpl;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 
@@ -53,31 +54,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
-		
-		http.cors().and().csrf().disable()
-			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-			.authorizeRequests().antMatchers("/api/auth/**").permitAll()
-			.antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
-			.antMatchers("/api/test/**").permitAll()
-			.anyRequest().authenticated(); 
+
+		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
+				.antMatchers("/api/test/**").permitAll().anyRequest().authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
-	
+
 	@Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs/**");
-        web.ignoring().antMatchers("/swagger.json");
-        web.ignoring().antMatchers("/swagger-ui.html");
-        web.ignoring().antMatchers("/swagger-resources/**");
-        web.ignoring().antMatchers("/webjars/**");
-    }		
-	
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/v2/api-docs/**");
+		web.ignoring().antMatchers("/swagger.json");
+		web.ignoring().antMatchers("/swagger-ui.html");
+		web.ignoring().antMatchers("/swagger-resources/**");
+		web.ignoring().antMatchers("/webjars/**");
+	}
+
 	@Bean
 	UrlBasedCorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
@@ -88,5 +86,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-	
+
 }

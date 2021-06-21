@@ -6,46 +6,44 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import com.ecommerce.model.AddressEntity;
-import com.ecommerce.model.Product;
+import com.ecommerce.exception.RestApiException;
+import com.ecommerce.model.Address;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.UserRepository;
+import com.ecommerce.security.SecurityContext;
 
 @Service
 public class AddressService {
-	
+
 	@Autowired
 	AddressRepository addressRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
-	public List<AddressEntity> getAllAddresses(){
+
+	public List<Address> getAllAddresses() {
 		return this.addressRepository.findAll();
 	}
-	
-	public AddressEntity save(AddressEntity addressEntity) {
-		Optional<User> user = userRepository.findById(addressEntity.getUserId());
-		if(user.isPresent()) {
-			addressEntity.setUser(user.get());
+
+	public Address save(Address addressEntity) throws RestApiException {
+		Optional<User> user = userRepository.findById(SecurityContext.getCurrentUserId());
+		addressEntity.valid();
+		addressEntity.setUser(user.get());
+		addressEntity.setUserId(user.get().getId());
+		return addressRepository.save(addressEntity);
+
+	}
+
+	public Address edit(long id, Address editAddress) throws RestApiException {
+		editAddress.valid();
+		Optional<Address> addressData = addressRepository.findById(id);
+		if (addressData.isPresent()) {
+			Address addressEntity = addressData.get();
+			addressEntity.set(editAddress);
 			return addressRepository.save(addressEntity);
 		}
-		return null;
+		throw new RestApiException("Address is not exsist in the database!");
 	}
-	
-	public AddressEntity edit(long id, AddressEntity editAddress) {
-		Optional<AddressEntity> addressData = addressRepository.findById(id);
-		if(addressData.isPresent()) {
-			AddressEntity addressEntity = addressData.get();
-			addressEntity.set(editAddress);		
-			return addressRepository.save(addressEntity);
-		}
-		return null;
-	}
-	
-	
-	
-	
+
 }

@@ -10,13 +10,13 @@ import com.ecommerce.repository.UserRepository;
 
 @Service
 public class UserService {
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	public User findByUsername(String username) {
 		Optional<User> user = userRepository.findByUsername(username);
 		return user.isPresent() ? user.get() : null;
 	}
-	
+
 }

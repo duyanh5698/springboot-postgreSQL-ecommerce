@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.ecommerce.model.ERole;
 import com.ecommerce.model.Role;
 
-
-
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 	Optional<Role> findByName(ERole name);
