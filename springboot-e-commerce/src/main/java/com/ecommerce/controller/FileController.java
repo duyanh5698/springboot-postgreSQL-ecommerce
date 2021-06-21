@@ -1,13 +1,14 @@
 package com.ecommerce.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,71 +19,51 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ecommerce.dto.MessageResponse;
 import com.ecommerce.model.File;
-import com.ecommerce.model.dto.FileResponse;
 import com.ecommerce.service.FileService;
+import com.ecommerce.service.FileStorageService;
+
+
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping
 public class FileController {
 
 	@Autowired
-    private final FileService fileService;
+	FileStorageService storageService;
+	
+	@Autowired
+	FileService fileService;
+	
+	@PostMapping("/upload")
+	public ResponseEntity<MessageResponse> uploadFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("productId") Long productId) {
+		String message = "";
+		try {
+			List<String> fileNames = new ArrayList<>();
 
-    @Autowired
-    public FileController(FileService fileService) {
-        this.fileService = fileService;
-    }
+			Arrays.asList(files).stream().forEach(file -> {
+				storageService.save(file);
+				String imgURL = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
+						.path(file.getOriginalFilename()).toUriString();
+				File fileDB = new File(file.getOriginalFilename(), imgURL, productId);
+				fileService.save(fileDB);
+				fileNames.add(file.getOriginalFilename());
+			});
+			message = "Uploaded the files successfully: " + fileNames;
+			return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
+		} catch (Exception e) {
+			message = "Fail to upload files!";
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new MessageResponse(message));
+		}
+	}
 
-    @PostMapping
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file, @RequestParam("productId") Long productId) {
-        try {
-            fileService.save(file, productId);
-
-            return ResponseEntity.status(HttpStatus.OK)
-                                 .body(String.format("File uploaded successfully: %s", file.getOriginalFilename()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(String.format("Could not upload the file: %s!", file.getOriginalFilename()));
-        }
-    }
-
-    @GetMapping
-    public List<FileResponse> list() {
-        return fileService.getAllFiles()
-                          .stream()
-                          .map(this::mapToFileResponse)
-                          .collect(Collectors.toList());
-    }
-
-    private FileResponse mapToFileResponse(File fileEntity) {
-        String downloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                                        .path("/files/")
-                                                        .path(fileEntity.getId())
-                                                        .toUriString();
-        FileResponse fileResponse = new FileResponse();
-        fileResponse.setId(fileEntity.getId());
-        fileResponse.setName(fileEntity.getName());
-        fileResponse.setContentType(fileEntity.getContentType());
-        fileResponse.setSize(fileEntity.getSize());
-        fileResponse.setUrl(downloadURL);
-
-        return fileResponse;
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-        Optional<File> fileEntityOptional = fileService.getFile(id);
-
-        if (!fileEntityOptional.isPresent()) {
-            return ResponseEntity.notFound()
-                                 .build();
-        }
-
-        File fileEntity = fileEntityOptional.get();
-        return ResponseEntity.ok()
-                             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getName() + "\"")
-                             .contentType(MediaType.valueOf(fileEntity.getContentType()))
-                             .body(fileEntity.getData());
-    }
+	@GetMapping("/files/{filename:.+}")
+	public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+		Resource file = storageService.load(filename);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+				.body(file);
+	}
 }
+

@@ -1,6 +1,5 @@
 package com.ecommerce.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,29 +13,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ecommerce.model.AddressEntity;
+import com.ecommerce.exception.RestApiException;
+import com.ecommerce.model.Address;
 import com.ecommerce.service.AddressService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/address")
 public class AddressController {
-	
+
 	@Autowired
 	AddressService addressService;
-	
-	@GetMapping("/addresses")
-	public ResponseEntity<List<AddressEntity>> getAllAddresses(){
+
+	@GetMapping("/list")
+	public ResponseEntity<List<Address>> getAllAddresses() {
 		return new ResponseEntity<>(addressService.getAllAddresses(), HttpStatus.OK);
 	}
-	
-	@PostMapping("/addresses")
-	public ResponseEntity<AddressEntity> createProduct(@RequestBody AddressEntity addressEntity) throws IOException{
-		return new ResponseEntity<>(addressService.save(addressEntity), HttpStatus.CREATED);
-	}
-	
-	@PutMapping("/addresses/{id}")
-	public ResponseEntity<AddressEntity> updateProduct(@PathVariable("id") long id, @RequestBody AddressEntity addressEntity){
-		return new ResponseEntity<>(this.addressService.edit(id, addressEntity), HttpStatus.OK);
+
+	@PostMapping("/create")
+	public ResponseEntity<Address> create(@RequestBody Address address) throws RestApiException {
+		return new ResponseEntity<>(addressService.save(address), HttpStatus.CREATED);
 	}
 
+	@PutMapping("/update/{id}")
+	public ResponseEntity<Address> update(@PathVariable("id") long id,
+			@RequestBody Address address) throws RestApiException {
+		return new ResponseEntity<>(this.addressService.edit(id, address), HttpStatus.OK);
+	}
+	
 }
